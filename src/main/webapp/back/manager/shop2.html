@@ -1,0 +1,398 @@
+<table id="shop2_dataInfo"></table>
+
+<div id="shop2_search" style="height:28px">
+
+	<a  href="javascript:delShopInfos()" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" 
+	style="float:left">删除</a>
+	<div class="datagrid-btn-seperator"></div>
+	
+	<label>请选择店铺类型:</label><select name="role" id="update_shop2_tid">
+		<option value="-1">--请选择--</option>
+	</select>&nbsp;
+	<label>请输入商家姓名:</label><input type="text" name="aname" id="admin_select_aname"/>
+	<label>请选择状态:</label><select name="status" id="shop_select_status">
+		<option value="-1">--请选择--</option>
+		<option value="2">已审核</option>
+		<option value="1">审核未通过</option>
+		<option value="0">待审核</option>
+	</select>
+	&nbsp;&nbsp;<a  href="javascript:search_shopInfo()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查找</a>
+</div>
+
+<style>
+	.checkShop_left{
+		margin-left:100px;
+		float:left;
+	}
+	.checkShop_left li{
+		list-style-type:none;
+		margin-top:20px;
+	}
+	.checkShop_left li span{
+		display:inline-block;
+		width:120px;
+		text-align:right;
+		margin-right:10px;
+	}
+	.checkShop_left li input , .checkShop_left li select{
+		width:200px;
+		border:1px solid #6198CD;		
+	}
+	
+	.add_shop_info>ul>li{
+		list-style-type:none;
+		margin-top:20px;
+		
+	}
+	.add_shop_info li>span{
+		display:inline-block;
+		width:120px;
+		text-align:right;
+		margin-right:10px;
+		
+	}
+	.add_shop_info li>input , .add_shop_info li>select{
+		width:200px;
+		border:1px solid #6198CD;		
+	}
+
+	#shop2_search label{
+		margin-left:10px;
+	}
+	
+</style>
+
+<!--修改操作框 -->
+<div id="update_shop_info" class="easyui-dialog" title="修改店铺信息"
+    data-options="iconCls:'icon-edit',resizable:true,modal:true,closed:true,fit:true">  
+    <div class="checkShop_left">
+	 		<ul>
+	 			<li>
+	 				<span >商&nbsp;&nbsp;家:</span>
+	 				<select name="update_checkShop_aid" id="update_checkShop_aid">
+	 				
+	 				</select>
+	 			</li>
+	 			<li>
+	 				<span >店铺类型:</span>
+	 				<select name="update_checkShop_tid" id="update_checkShop_tid">
+	 				
+	 				</select>
+	 			</li>
+	 			<li>
+	 				<span>店铺名称:</span>
+	 				<input type="text" name="update_checkShop_sname" id="update_checkShop_sname"  required="true"/>
+	 				<input type="hidden" id="update_checkShop_spid" />
+	 			</li>
+	 			<li>
+				<span>省&nbsp;&nbsp;&nbsp;&nbsp;份：</span>
+				<select name="update_shopInfo_prov" id="update_shopInfo_prov">
+					<option value="-1">--请选择省份--</option>
+				</select>
+				<span>城&nbsp;&nbsp;&nbsp;&nbsp;市：</span>
+				<select name="update_shopInfo_city" id="update_shopInfo_city">
+					<option value="-1">--请选择城市--</option>
+				</select>
+				<span>地&nbsp;&nbsp;&nbsp;&nbsp;区：</span>
+				<select name="update_shopInfo_area" id="update_shopInfo_area">
+					<option value="-1">--请选择地区--</option>
+				</select>
+			</li>
+				<li>
+					<span>详细地址：</span>
+					<input type="text" name="update_shopInfo_addr" id="update_shopInfo_addr"  required="true"/>
+				</li>
+				<li>
+					<span>联系方式：</span>
+					<input type="text" name="update_shopInfo_tel" id="update_shopInfo_tel"  required="true"/>
+				</li>
+	 		</ul>
+	 	<br /><br />
+	 	<center>
+	 		<a  href="javascript:update_ShopInfo()" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">修改</a>
+	 	</center>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+	$(function(){
+		$.post("../../servlet/GoodsTypeInfoServlet",{op:"findAllGoodsType"},function(data){
+			var obj=$("#update_checkShop_tid");
+			$.each(data,function(index,item){
+				obj.append( $("<option value='"+item.tid+"'>"+item.tname+"</option>") );
+			});
+		},"json"); 	
+	});
+
+	var datagrid;
+	var statusObj=[{sid:1,statusStr:'正常'},{sid:0,statusStr:'已禁用'}];
+	
+	$(function(){
+		$.post("../../servlet/AdminInfoServlet",{op:"findAllAdmin"},function(data){
+			var obj=$("#update_checkShop_aid");
+			$.each(data,function(index,item){
+				obj.append( $("<option value='"+item.aid+"'>"+item.aname+"</option>") );
+			});
+		},"json"); 	
+	});
+ 
+ $(function(){
+		$.post("../../servlet/GoodsTypeInfoServlet",{op:"findAllGoodsType"},function(data){
+			var obj=$("#update_shop2_tid");
+			$.each(data,function(index,item){
+				obj.append( $("<option value='"+item.tid+"'>"+item.tname+"</option>") );
+			});
+		},"json"); 	
+	});
+	
+	datagrid=$('#shop2_dataInfo').datagrid({
+		url:'../../servlet/ShopServlet',
+		queryParams:{op:"findShopsByPages"},
+		loadMsg:"数据加载中...",
+		fitColumns:true,
+		striped:true,
+		nowrap:true,
+		pagination:true,
+		fit:true,
+		rownumbers:true,
+		pageList:[10,20,30,40,50,100],
+		
+		sortName:"spid",  //排序字段
+		remoteSort:false,
+		
+		columns:[[
+				{field:'spids',title:'选择',width:70,align:'center',checkbox:true},
+				{field:'spid',title:'店铺id',width:70,align:'center',sortable:true},
+				{field:'sname',title:'店铺姓名',width:70,align:'center'},
+				{field:'aid',title:'商家id',width:70,align:'center'},
+				{field:'aname',title:'商家姓名',width:70,align:'center'},
+				{field:'tid',title:'类型id',width:70,align:'center'},
+				{field:'tname',title:'类型名称',width:70,align:'center'},
+				{field:'prov',title:'省份',width:100,align:'center'},
+				{field:'city',title:'状态描述',width:100,align:'center'},
+				{field:'area',title:'地区',width:100,align:'center'},
+				{field:'points',title:'详细地址',width:80,align:'center'},
+				{field:'tel',title:'联系电话',width:100,align:'center'},
+				{field:'info',title:'店铺信息',width:100,align:'center'},
+				{field:'statusStr',title:'店铺状态',width:70,align:'center',editor:{type:"combobox",options:{
+					required:true,valueField:'sid',textField:'statusStr',data:statusObj}},  //textField:显示给别人看的   
+					//data:statusObj:可以是个json类型的对象
+					formatter:function(value,row,index){  //value：当前列的值   row:当前行的值
+						for(var i=0;i<statusObj.length;i++){
+							if(statusObj[i].sid==value){
+								return value;
+							}
+						}
+					return value;
+					}
+				},
+				
+				{field:'_operate',title:'操作',width:120,align:'center',formatter:function(val,row,index){
+					return "<a href='javascript:delShopInfo("+row.spid+")' class='icon-remove1 icon-padding'>删除</a>"+
+					"&nbsp;&nbsp;&nbsp;<a href='javascript:updateShopInfo("+JSON.stringify(row)+")' class='icon-edit2 icon-padding'>修改</a>"
+				}}
+		]],
+		toolbar: "#shop2_search"
+	});
+
+	//查询
+	function search_shopInfo(){
+		var tid=$("#update_shop2_tid").val();
+		var aname=$("#admin_select_aname").val();
+		var status=$("#shop_select_status").val();
+		
+		$('#shop2_dataInfo').datagrid({
+			url:'../../servlet/ShopServlet',
+			queryParams:{op:"searchShopInfoByPage",tid:tid,aname:aname,status:status}
+		});
+	}
+	
+	
+	//修改店铺信息
+	function updateShopInfo(row){
+		
+		$("#update_shop_info").dialog("open");
+		$("#update_checkShop_aid").val(row.aid);
+		$("#update_checkShop_tid").val(row.tid);
+		$("#update_checkShop_sname").val(row.sname);
+		$("#update_shopInfo_prov option:selected").text(row.prov);
+		$("#update_shopInfo_city option:selected").text(row.city);
+		$("#update_shopInfo_area option:selected").text(row.area); 
+		$("#update_shopInfo_addr").val(row.points);
+		$("#update_shopInfo_tel").val(row.tel);
+		$("#update_checkShop_spid").val(row.spid);
+		
+	}
+	
+	function update_ShopInfo(){
+		var aid=$("#update_checkShop_aid").val();
+		var tid=$("#update_checkShop_tid").val();
+		var sname=$("#update_checkShop_sname").val();
+		var prov=$("#update_shopInfo_prov").find("option:selected").text();
+		var city=$("#update_shopInfo_city").find("option:selected").text();
+		var area=$("#update_shopInfo_area").find("option:selected").text(); 
+		var points=$("#update_shopInfo_addr").val();
+		var tel=$("#update_shopInfo_tel").val();
+		var spid=$("#update_checkShop_spid").val();
+		
+		$.post("../../servlet/ShopServlet",{op:"updateShopInfo",aid:aid,tid:tid,spname:sname,points:points,tel:tel,spid:spid,prov:prov,city:city,area:area},function(data){
+			data=parseInt( $.trim(data));
+			if(data>0){
+				$.messager.show({title:'成功提示',msg:'店铺信息修改成功。。。',timeout:2000,showType:'slide'});
+				$("#update_checkShop_aid").val("");
+				$("#update_checkShop_tid").val("");
+				$("#update_checkShop_sname").val("");
+				$("#update_shopInfo_prov").val("-1");
+				$("#update_shopInfo_city").val("-1");
+				$("#update_shopInfo_area").val("-1");
+				$("#update_shopInfo_addr").val("");
+				$("#update_shopInfo_tel").val("");
+				$("#update_checkShop_spid").val("");
+				
+				$("#update_shop_info").dialog("close");  //关闭弹窗
+				$('#shop2_dataInfo').datagrid("reload");  //刷新数据
+			}else{
+	 			$.messager.alert('失败提示','店铺信息修改失败..','error');
+			}
+		});
+	}
+	 	
+	function delShopInfos(){
+		var rows=datagrid.datagrid("getChecked");
+		if(rows.length<=0){
+			$.messager.show({title:'温馨提示',msg:'请选择你要删除的数据',timeout:2000,showType:'slide'});
+		}else{
+			$.messager.confirm('确认删除','您确定要删除选中的数据吗？',function(rt){
+				if(rt){
+					var spids="";
+					for(var i=0;i<rows.length-1;i++){
+						spids+=rows[i].spid+",";
+					}
+					spids+=rows[i].spid;
+				
+					$.post("../../servlet/ShopServlet",{op:"deleteShopInfo",spid:spids},function(data){
+						data=parseInt( $.trim(data));
+						if(data>0){
+							$.messager.show({title:'成功提示',msg:'店铺信息删除成功...',timeout:2000,showType:'slide'});
+							datagrid.datagrid("reload"); //重新加载数据
+						}else{
+							$.messager.alert('失败提示','店铺信息删除失败...','error');
+						}
+					});
+				}
+			});
+		}
+	}
+	
+	//删除单行
+	function delShopInfo(spid){
+		$.post("../../servlet/ShopServlet",{op:"deleteShopInfo",spid:spid},function(data){
+			data=parseInt( $.trim(data));
+			if(data>0){
+				$.messager.show({title:'成功提示',msg:'店铺信息删除成功...',timeout:2000,showType:'slide'});
+				datagrid.datagrid("reload"); //重新加载数据
+			}else{
+				$.messager.alert('失败提示','店铺信息删除失败...','error');
+			}
+		});
+	}
+	
+	
+	$(function(){
+		var xmlDom=createXmlDom();
+		xmlDom.async=false;
+		xmlDom.load("city.xml");
+		
+		var pro=$("#update_shopInfo_prov");
+		var city=$("#update_shopInfo_city");
+		var district=$("#update_shopInfo_area");
+		
+		var pros=xmlDom.getElementsByTagName("province");
+		
+		for(var i=0;i<pros.length;i++){
+			addOption(pros[i],pro);	
+		}
+		
+		pro.bind({
+			change:function(){
+				var code=pro.val();
+				$("#update_shopInfo_city").empty();
+				$("#update_shopInfo_area").empty();
+				var opInfo=$("<option value='100100'>--请选择城市--</option>");
+				$("#update_shopInfo_city").prepend(opInfo);
+				var opInfo=$("<option value='100101'>--请选择地区--</option>");
+				$("#update_shopInfo_area").prepend(opInfo);
+				
+				for(var i=0;i<pros.length;i++){
+					if(pros[i].nodeType==1 && pros[i].getAttribute("postcode")==code){
+						var cities=pros[i].childNodes;
+						for(var j=0;j<cities.length;j++){
+							if(cities[j].nodeType==1){
+								addOption(cities[j],city);	
+							}
+						}
+					}
+				}
+			}
+		});
+		
+		city.bind({
+			change:function(){
+				var selPro=pro.val();
+				var code=city.val();
+				$("#update_shopInfo_area").empty();
+				var opInfo=$("<option value='100101'>--请选择地区--</option>");
+				$("#update_shopInfo_area").prepend(opInfo);
+				
+				for(var i=0;i<pros.length;i++){
+					if(pros[i].nodeType==1 && pros[i].getAttribute("postcode")==selPro){
+						var cities=pros[i].childNodes;
+						for(var j=0;j<cities.length;j++){
+							if(cities[j].nodeType==1 && cities[j].getAttribute("postcode")==code){
+								var area=cities[j].childNodes;
+								for(var k=0;k<area.length;k++){
+									if(area[k].nodeType==1){
+										addOption(area[k],district);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+	});
+	
+	function addOption(node,obj){
+		var opInfo=$("<option value="+node.getAttribute("postcode")+">"+node.getAttribute("name")+"</option>");
+		opInfo.appendTo(obj);
+	}
+	
+	
+	function createXmlDom(){
+		var xmlDom=null;
+		if(window.ActiveXObject){
+			xmlDom=createIeXmlDom();	
+		}else if(document.implementation.createDocument){
+			xmlDom=document.implementation.createDocument("","",null);
+		}else{
+			alert("您的浏览器不支持xmlDom,请及时更新");	
+		}
+		return xmlDom;
+	}
+	
+	function createIeXmlDom(){
+		var arr=["MSXML2.DOMDocument.6.0","MSXML2.DOMDocument.5.0","MSXML2.DOMDocument.4.0","MSXML2.DOMDocument.3.0","MSXML2.DOMDocument","Microsoft.XMLDOM"];
+		for(var i=0;i<arr.length;i++){
+			try{
+				var ieXmlDom=new ActiveXObject(arr[i]);
+				return ieXmlDom;
+			}catch(ex){
+				alert("您的浏览器不支持MSXML组件，请及时更新浏览器");	
+			}
+		}
+	}
+		
+	
+</script>

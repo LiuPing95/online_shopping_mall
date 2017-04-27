@@ -1,0 +1,104 @@
+
+<style>
+	.add_goods_info>ul>li{
+		list-style-type:none;
+		margin-top:20px;
+		
+	}
+	.add_goods_info li>span{
+		display:inline-block;
+		width:120px;
+		text-align:right;
+		margin-right:10px;
+		
+	}
+	.add_goods_info li>input , .add_goods_info li>select{
+		width:200px;
+		border:1px solid #6198CD;		
+	}
+
+</style>
+
+
+<!-- 添加操作框 -->
+ <div class="add_goods_info">
+		<ul>
+			<li>
+				<span >店&nbsp;&nbsp;铺:</span>
+				<select name="add_goodsInfo_spid" id="add_goodsInfo_spid">
+				
+				</select>
+				<span>商品名称:</span>
+				<input type="text" name="add_goodsInfo_gname" id="add_goodsInfo_gname" placeholder="请输入商品名称..."/>
+				<span>商品描述:</span>
+				<input type="text" name="add_goodsInfo_des" id="add_goodsInfo_des" placeholder="请输入描述..." />
+			</li>
+			<li>
+				<span>商品价格：</span>
+				<input type="text" name="add_goodsInfo_price" id="add_goodsInfo_price" placeholder="请输入商品价格..."/>
+			</li>
+			<li>
+				<span>商品图片：</span>
+				<input type="file" name="pic" id="add_goodsInfo_pic" />
+			</li>
+			<li>	
+				<span>商品信息：</span>
+				<a  href="javascript:add_goodsInfo()" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				<br /><br />
+				<div style="margin-left:70px;margin-top:0px">
+					<script id="editor" type="text/plain" style="width:900px;height:300px;"></script>
+				</div>
+			</li>
+		</ul>
+</div>
+
+	
+<script type="text/javascript">
+	//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+	var ue = UE.getEditor('editor');
+	 
+	function add_goodsInfo(){
+		var spid=$("#add_goodsInfo_spid").val();
+		var gname=$("#add_goodsInfo_gname").val();
+		var des=$("#add_goodsInfo_des").val();
+		var price=$("#add_goodsInfo_price").val();
+		
+		$.ajaxFileUpload({
+			url:"../../servlet/GoodsInfoServlet?op=addgoodsInfo",
+			secureuri:false,
+			fileElementId:"add_goodsInfo_pic",
+			dataType:"json",
+			data:{spid:spid,gname:gname,des:des,price:price},
+			success:function(data,status){
+				data=parseInt(  $.trim(data));
+				if(data>0){
+					$.messager.show({title:'成功提示',msg:'商品信息添加成功。。。',timeout:2000,showType:'slide'});
+					
+					$("#add_goodsInfo_spid").val("");
+					$("#add_goodsInfo_gname").val("");
+					$("#add_goodsInfo_des").val("");
+					$("#add_goodsInfo_price").val("");
+					
+					$("#add_goods_info").dialog("close");  //关闭弹窗
+					$('#goods_dataInfo').datagrid("reload");  //刷新数据
+				}
+			},
+			error:function(data,status,e){
+	 			$.messager.alert('失败提示','商品信息添加失败','error');
+			}
+		});
+		
+		}
+
+	 $(function(){
+			$.post("../../servlet/ShopServlet",{op:"findAllshops"},function(data){
+				var obj=$("#add_goodsInfo_spid");
+				$.each(data,function(index,item){
+					obj.append( $("<option value='"+item.spid+"'>"+item.sname+"</option>") );
+				});
+			},"json"); 	
+		});
+		
+</script>
+
+

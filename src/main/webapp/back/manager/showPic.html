@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="../../js/echarts.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-1.12.4.js"></script>
+</head>
+<body>
+	<div id="show" style="width:500px;height:600px"></div>
+	<script type="text/javascript">
+		var myCharts=echarts.init(document.getElementById('show'));
+		myCharts.setOption({
+			title:{
+				title:'示例'
+			},
+			tooltip:{},
+			legend:{
+				data:['订单量']
+			},
+			xAxis:{
+				data:[] 
+			},
+			yAxis:{},
+			series:[{
+				name:'订单量',
+				type:'bar',
+				data:[]
+			}]
+		});
+		myCharts.showLoading();
+		var x=[];
+		var y=[];
+		$.ajax({
+			type:"post",
+			async:true,
+			url:"../../servlet/OrdersServlet",
+			data:{},
+			dataType:"json",
+			success:function(result){
+				if(result){
+					alert("result="+result);
+					for(var i=0;i<result.length;i++){
+						alert("gname="+result[i].gname);
+						x.push(result[i].gname);
+						//x.push(resul[i].oid);
+					}
+					for(var i=0;i<result.length;i++){
+						y.push(result[i].nums);
+					}
+					myCharts.hideLoading();
+					myCharts.setOption({
+						xAxis:{
+							data:x
+						},
+						series:[{
+							name:'订单量',
+							data:y
+						}]
+					});
+				}
+			},
+			error:function(errorMsg){
+				alert("图标显示失败...");
+				myCharts.hideLoading();
+			}
+		})
+	</script>
+</body>
+</html>

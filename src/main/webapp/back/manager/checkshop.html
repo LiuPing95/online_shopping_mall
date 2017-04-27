@@ -1,0 +1,145 @@
+<table id="checkshop_dataInfo"></table>
+
+<div id="shop1_search" style="height:28px">
+	
+	<label>请选择店铺类型:</label><select name="role" id="check_shop1_tid">
+		<option value="-1">--请选择--</option>
+	</select>&nbsp;
+	<label>请输入商家姓名:</label><input type="text" name="aname" id="check_shop1_aname"/>
+	<label>请选择状态:</label><select name="status" id="check_shop1_status">
+		<option value="-1">--请选择--</option>
+		<option value="0">未审核</option>
+		<option value="1">未通过审核</option>
+		<option value="2">已审核</option>
+	</select>
+	&nbsp;&nbsp;<a  href="javascript:search_shopInfo()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查找</a>
+</div>
+
+<style>
+	.check_shop_info>ul>li{
+		list-style-type:none;
+		margin-top:20px;
+		
+	}
+	.check_shop_info li>span{
+		display:inline-block;
+		width:120px;
+		text-align:right;
+		margin-right:10px;
+		
+	}
+	.check_shop_info li>input , .check_shop_info li>select{
+		width:200px;
+		border:1px solid #6198CD;		
+	}
+
+	#shop1_search label{
+		margin-left:10px;
+	}
+	
+</style>
+
+<script type="text/javascript">
+
+	$(function(){
+		$.post("../../servlet/GoodsTypeInfoServlet",{op:"findAllGoodsType"},function(data){
+			var obj=$("#check_shop1_tid");
+			$.each(data,function(index,item){
+				obj.append( $("<option value='"+item.tid+"'>"+item.tname+"</option>") );
+			});
+		},"json"); 	
+	});
+
+
+	var datagrid;
+	var statusObj=[{sid:0,statusStr:'来审核'},{sid:1,statusStr:'审核未通过'},{sid:2,statusStr:'已审核，可以正常登录'},{sid:3,statusStr:'冻结'},];
+	
+	datagrid=$('#checkshop_dataInfo').datagrid({
+		url:'../../servlet/ShopServlet',
+		queryParams:{op:"findShopsByPages"},
+		loadMsg:"数据加载中...",
+		fitColumns:true,
+		striped:true,
+		nowrap:true,
+		pagination:true,
+		fit:true,
+		rownumbers:true,
+		pageList:[10,20,30,40,50,100],
+		
+		sortName:"spid",  //排序字段
+		remoteSort:false,
+		
+		columns:[[
+				{field:'spids',title:'选择',width:70,align:'center',checkbox:true},
+				{field:'spid',title:'店铺id',width:70,align:'center',sortable:true},
+				{field:'sname',title:'店铺姓名',width:70,align:'center'},
+				{field:'aid',title:'商家id',width:70,align:'center',sortable:true},
+				{field:'aname',title:'商家姓名',width:70,align:'center'},
+				{field:'tname',title:'类型名称',width:70,align:'center'},
+				{field:'points',title:'地址',width:80,align:'center'},
+				{field:'tel',title:'联系电话',width:100,align:'center'},
+				{field:'statusStr',title:'店铺状态',width:70,align:'center',editor:{type:"combobox",options:{
+					required:true,valueField:'sid',textField:'statusStr',data:statusObj}},  //textField:显示给别人看的   
+					//data:statusObj:可以是个json类型的对象
+					formatter:function(value,row,index){  //value：当前列的值   row:当前行的值
+						for(var i=0;i<statusObj.length;i++){
+							if(statusObj[i].sid==value){
+								return value;
+							}
+						}
+					return value;
+					}
+				},			
+				{field:'_operate',title:'操作',width:150,align:'center',formatter:function(val,row,index){
+					return "<a href='javascript:check_ShopInfoOk("+JSON.stringify(row.spid,row.aid)+")' class='icon-edit2 icon-padding'>通过</a>"
+					+"&nbsp;&nbsp;<a href='javascript:check_ShopInfoNo("+(row.spid)+")' class='icon-edit2 icon-padding'>不通过</a>";
+				}}
+		]],
+		toolbar: "#shop1_search"
+	});
+
+	
+	
+	//    2已审核,可以正常登录 
+	 function check_ShopInfoOk(spid){
+		var status=2;
+		$.post("../../servlet/ShopServlet",{op:"checkShop",spid:spid,status:status},function(data){
+			data=parseInt(  $.trim(data));
+			if(data>0){
+				$.messager.show({title:'成功提示',msg:'店铺信息审核通过成功',timeout:2000,showType:'slide'});
+				$("#checkshop_dataInfo").datagrid("reload");
+			}else{
+				$.messager.alert('温馨提示','店铺信息审核通过失败','error');
+				$("#checkshop_dataInfo").datagrid("reload");
+			}
+		});
+	 }
+	  
+	 //0  来审核
+	 function check_ShopInfoNo(spid){
+			var status=1;
+			$.post("../../servlet/ShopServlet",{op:"checkShop",spid:spid,status:status},function(data){
+				data=parseInt(  $.trim(data));
+				if(data>0){
+					$.messager.show({title:'成功提示',msg:'店铺信息审核未通过成功',timeout:2000,showType:'slide'});
+					$("#checkshop_dataInfo").datagrid("reload");
+				}else{
+					$.messager.alert('失败提示','店铺信息审核未通过失败..','error');
+				}
+			});
+		 }
+	
+	 
+	  //查询
+	  function search_shopInfo(){
+		  var tid=$("#check_shop1_tid").val();
+		  var aname=$("#check_shop1_aname").val();
+		  var status=$("#check_shop1_status").val();
+		  
+		  $('#checkshop_dataInfo').datagrid({
+			 url:'../../servlet/ShopServlet',
+			 queryParams:{op:"searchShopInfoByPage",tid:tid,status:status,aname:aname}
+		  });
+		  
+	  }
+</script>

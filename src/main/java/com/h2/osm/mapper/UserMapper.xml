@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.h2.osm.mapper.UserMapper">
+	<insert id="insert" parameterType="com.h2.osm.entity.UserInfo">
+		insert into 
+		userInfo(id, name, pwd, telephone, email, des, status, photo) 
+		values(
+			seq_userInfo.NEXTVAL,
+			#{user.name},
+			#{user.pwd},
+			#{user.telephone},
+			#{user.email},
+			#{user.des},
+			#{user.status},
+			#{user.photo}
+		)
+	</insert>
+	
+	<delete id="delete" parameterType="list">
+		delete from userInfo
+		where 1=1 and id in
+		<foreach collection="users" item="user" separator="," open="(" close=")">
+			#{user.id}
+		</foreach>
+	</delete>
+	
+	<update id="updatePassword" parameterType="com.h2.osm.entity.UserInfo">
+		update userInfo set pwd = #{user.pwd} where id = #{user.id}
+	</update>
+	
+	<select id="getUserByIds" parameterType="com.h2.osm.entity.UserInfo" resultType="com.h2.osm.entity.UserInfo">
+		select * from userInfo where 1=1
+		<if test="user.name != null">and name like concat(concat('%',#{user.name}),'%')</if>
+		<if test="user.nickName != null">and nickname like concat(concat('%',#{user.nickName}),'%')</if>
+		<if test="user.province != null">and province = #{user.province}</if>
+		<if test="user.city != null">and city = #{user.city}</if>
+		<if test="user.area != null">and area = #{user.area}</if>
+	</select>
+</mapper>

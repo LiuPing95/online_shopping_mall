@@ -1,0 +1,418 @@
+
+<table id="vip_dataInfo"></table>
+
+<script type="text/javascript" src="../../js/camera.js"></script>
+
+<!-- 工具栏 -->
+<div id="vip_search" style="height:28px">
+	<a  href="javascript:delvipInfos()" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" 
+	style="float:left">删除</a>
+	<div class="datagrid-btn-seperator"></div>
+	
+	<label>请输入会员姓名:</label><input type="text" name="aname" id="vip_select_aname"/>
+	<label>请选择状态:</label><select name="status" id="vip_select_status">
+		<option value="-1">--请选择--</option>
+		<option value="0">非会员</option>
+		<option value="1">会员</option>
+	</select>
+	&nbsp;&nbsp;<a  href="javascript:search_vipInfo()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查找</a>
+</div>
+<style>
+	.vip_left{
+		float:left;
+		margin-left:200px;
+		margin-top:20px;
+	}
+	.vip_left li{
+		list-style-type:none;
+		margin-top:20px;
+		
+	}
+	.vip_left li span{
+		display:inline-block;
+		width:120px;
+		text-align:right;
+		margin-right:10px;
+		
+	}
+	.vip_left li input , .vip_left li select{
+		width:200px;
+		border:1px solid #6198CD;		
+	}
+	.vip_right{
+		float:right;
+		border:1px solid red;
+		width:400px;
+		height:300px;
+		margin-right:200px;
+		margin-top:20px;
+	}
+}
+</style>
+
+<style>
+	#vip_search label{
+		margin-left:10px;
+	}
+</style>
+
+<!--修改操作框 -->
+<div id="vip_updateUserInfo" class="easyui-dialog" title="修改会员信息"
+    data-options="iconCls:'icon-edit',resizable:true,modal:true,closed:true,fit:true">  
+    <div class="vip_left">
+    	<form>
+	 		<ul>
+	 			<li>
+	 				<span >会员编号:</span>
+	 				<input type="text" name="update_vip_uid" id="update_vip_uid" readonly="true"/>
+	 			</li>
+	 			<li>
+	 				<span>昵称:</span>
+	 				<input type="text" name="update_vip_uname" id="update_vip_uname" required="true"/>
+	 			</li>
+	 			<li>
+	 				<span>真实姓名:</span>
+	 				<input type="text" name="update_vip_relname" id="update_vip_relname" required="true"/>
+	 			</li>
+	 			<li>
+	 				<span>联系方式:</span>
+	 				<input type="text" name="update_vip_tel" id="update_vip_tel" required="true"/>
+	 			</li>
+	 			<li>
+					<span>省&nbsp;&nbsp;&nbsp;&nbsp;份：</span>
+					<select name="update_vip_prov" id="update_vip_prov">
+					
+					</select>
+				</li>
+	 			<li>
+					<span>城&nbsp;&nbsp;&nbsp;&nbsp;市：</span>
+					<select name="update_vip_city" id="update_vip_city">
+						
+					</select>
+				</li>
+	 			<li>
+					<span>地&nbsp;&nbsp;&nbsp;&nbsp;区：</span>
+					<select name="update_vip_area" id="update_vip_area">
+						
+					</select>
+				</li>
+	 			<li>
+	 				<span>图&nbsp;&nbsp;片</span>
+	 				<input type="file" name="photo" id="update_vip_photo" />
+	 			</li>
+	 		</ul>
+	 	</form>
+	 	<br /><br />
+	 	<center>
+	 		<a  href="javascript:update_vipInfo()" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">修改</a>
+	 	</center>
+    </div>
+    <div class="vip_right">
+		<img id="update_vipInfo_photo" src="" width="200px" height="200px" />
+ 	</div>
+</div>
+
+<script>
+	var statusObj=[{sid:1,statusStr:'正常'},{sid:0,statusStr:'已禁用'}];
+	var datagrid=$('#vip_dataInfo').datagrid({
+		url:'../../servlet/UserInfoServlet',
+		queryParams:{op:"findvipInfoByPage"},
+		loadMsg:"数据加载中...",
+		fitColumns:true,
+		striped:true,  //设置为true将交替显示行背景
+		nowrap:true,  //设置为true，当数据长度超出列宽时将会自动截取
+		pagination:true,
+		fit:true,
+		rownumbers:true,
+		pageList:[2,5,10,15,20,30],
+		pageSize:5,
+		sortName:"usid",
+		remoteSort:false,
+		
+		columns:[[
+				 {field:'usids',title:'选择',width:70,align:'center',checkbox:true},
+				 {field:'photo',title:'图像',width:100,align:'center',formatter:function(value,row,index){
+				 	if(value==""){
+						return "<img src='../../images/zanwu.jpg' width='60px' height='60px' />";
+					}else{
+						return "<img src='../../"+value+"' width='60px' height='60px' />";
+					}
+				}},   
+				{field:'usid',title:'会员id',width:70,align:'center'}, 
+				{field:'uname',title:'昵称',width:80,align:'center'},
+				{field:'relname',title:'真实姓名',width:80,align:'center'},
+				{field:'tel',title:'联系方式',width:100,align:'center'},
+				{field:'prov',title:'省份',width:100,align:'center'},
+				{field:'city',title:'城市',width:80,align:'center'},
+				{field:'area',title:'地区',width:80,align:'center'},
+				{field:'score',title:'积分',width:30,align:'center'},
+				{field:'strStatus',title:'状态',width:70,align:'center',editor:{type:"combobox",options:{
+					required:true,valueField:'sid',textField:'statusStr',data:statusObj}},  //textField:显示给别人看的   
+					//data:statusObj:可以是个json类型的对象
+					formatter:function(value,row,index){  //value：当前列的值   row:当前行的值
+						for(var i=0;i<statusObj.length;i++){
+							if(statusObj[i].sid==value){
+								return value;
+							}
+						}
+						return value;
+						}
+					},
+				{field:'_operate',title:'操作',width:200,align:'center',formatter:function(val,row,index){
+					return "<a href='javascript:delvipInfo()' class='icon-remove1 icon-padding'>删除</a>"+
+					"&nbsp;&nbsp;&nbsp;<a href='javascript:updateAdminInfo("+JSON.stringify(row)+")' class='icon-edit2 icon-padding'>修改</a>"+
+					"&nbsp;&nbsp;&nbsp;<a href='javascript:check_VipInfoOk("+row.usid+")' class='icon-edit2 icon-padding'>成为会员</a>"+
+					"&nbsp;&nbsp;&nbsp;<a href='javascript:check_VipInfoNo("+row.usid+")' class='icon-edit2 icon-padding'>取消会员</a>"
+				}}   
+		]],  
+		toolbar: "#vip_search" 
+	});
+	
+	//  1 会员
+	 function check_VipInfoOk(usid){
+		var status=1;
+		$.post("../../servlet/UserInfoServlet",{op:"checkVip",usid:usid,status:status},function(data){
+			data=parseInt(  $.trim(data));
+			if(data>0){
+				$.messager.show({title:'成功提示',msg:'修改该用户状态为会员成功',timeout:2000,showType:'slide'});
+			}else{
+				$.messager.alert('温馨提示','修改该用户状态为会员失败','error');
+			}
+			$("#vip_dataInfo").datagrid("reload");
+		});
+	 }
+	  
+	 //0 非会员
+	 function check_VipInfoNo(usid){
+			var status=0;
+			$.post("../../servlet/UserInfoServlet",{op:"checkVip",usid:usid,status:status},function(data){
+				data=parseInt(  $.trim(data));
+				if(data>0){
+					$.messager.show({title:'成功提示',msg:'取消该用户会员身份成功',timeout:2000,showType:'slide'});
+					$("#checkshop_dataInfo").datagrid("reload");
+				}else{
+					$.messager.alert('失败提示','取消该用户会员身份失败','error');
+				}
+			});
+		 }
+	
+	
+	///弹出更新操作框
+	function updateAdminInfo(row){
+		
+		$("#vip_updateUserInfo").dialog("open");
+		
+		$("#update_vip_uid").val(row.usid);
+		$("#update_vip_uname").val(row.uname);
+		$("#update_vip_relname").val(row.relname);
+		$("#update_vip_tel").val(row.tel);
+		
+		$("#update_vip_prov option:selected").text(row.prov);
+		$("#update_vip_city option:selected").text(row.city);
+		$("#update_vip_area option:selected").text(row.area); 
+		
+		if(row.photo!=""){
+			$("#update_vipInfo_photo").attr("src","../../"+row.photo);
+		}
+	}
+	
+	function update_vipInfo(){
+		var usid=$("#update_vip_uid").val();
+		var uname=$("#update_vip_uname").val();
+		var relname=$("#update_vip_relname").val();
+		var tel=$("#update_vip_tel").val();
+		var prov=$("#update_vip_prov").find("option:selected").text();
+		var city=$("#update_vip_city").find("option:selected").text();
+		var area=$("#update_vip_area").find("option:selected").text();
+
+		//更新数据
+		$.ajaxFileUpload({
+			url:"../../servlet/UserInfoServlet?op=updateUserInfo",
+	 		secureuri:false,
+	 		fileElementId:"update_vip_photo",
+	 		dataType:"json",
+	 		data:{usid:usid,uname:uname,relname:relname,tel:tel,prov:prov,city:city,area:area},
+	 		success:function(data,status){
+	 			data=parseInt(  $.trim(data));
+	 			if(data>0){
+					$.messager.show({title:'成功提示',msg:'会员信息修改成功。。。',timeout:2000,showType:'slide'});
+					$("#update_vip_uid").val("");
+					$("#update_vip_uname").val("");
+					$("#update_vip_relname").val("");
+					$("#update_vip_tel").val("");
+					$("#update_vip_prov").val("-1");
+					$("#update_vip_city").val("-1");
+					$("#update_vip_area").val("-1");
+					
+					
+					$("#vip_updateUserInfo").dialog("close");  //关闭弹窗
+					$('#vip_dataInfo').datagrid("reload");  //刷新数据
+				}
+	 		},
+	 		error:function(data,status,e){
+	 			$.messager.alert('失败提示','会员信息修改失败..','error');
+	 		}
+		});
+	}
+	
+	//删除单行数据
+	function delvipInfo(){
+		var row=datagrid.datagrid("getChecked")[0];
+		if(row.length<=0){
+			$.messager.show({title:'温馨提示',msg:'请选择你要删除的数据',timeout:2000,showType:'slide'});
+		}else{
+			$.messager.confirm('确认删除','您确定要删除这条数据吗？',function(rt){
+				if(rt){
+					var usid=row.usid;
+					$.post("../../servlet/UserInfoServlet",{op:"deleteUserInfo",usid:usid},function(data){
+						data=parseInt( $.trim(data));
+						if(data>0){
+							$.messager.show({title:'成功提示',msg:'管理员信息删除成功...',timeout:2000,showType:'slide'});
+							datagrid.datagrid("reload"); //重新加载数据
+						}else{
+							$.messager.alert('失败提示','管理员信息删除失败...','error');
+						}
+					});
+				}
+			});
+		}
+	}
+	
+	function delvipInfos(){		
+		var rows=datagrid.datagrid("getChecked");
+		alert("rows="+rows);
+		if(rows.length<=0){
+			$.messager.show({title:'温馨提示',msg:'请选择你要删除的数据',timeout:2000,showType:'slide'});
+		}else{
+			$.messager.confirm('确认删除','您确定要删除选中的数据吗？',function(rt){
+				if(rt){
+					var usids="";
+					for(var i=0;i<rows.length-1;i++){
+						usids+=rows[i].usid+",";
+					}
+					usids+=rows[i].usid;
+				
+					$.post("../../servlet/UserInfoServlet",{op:"deleteUserInfo",usid:usids},function(data){
+						data=parseInt( $.trim(data));
+						if(data>0){
+							$.messager.show({title:'成功提示',msg:'管理员信息删除成功...',timeout:2000,showType:'slide'});
+							datagrid.datagrid("reload"); //重新加载数据
+						}else{
+							$.messager.alert('失败提示','管理员信息删除失败...','error');
+						}
+					});
+				}
+			});
+		}
+	}
+	
+	//查询
+	 function search_vipInfo(){
+		var uname=$("#vip_select_aname").val();
+		var status=$("#vip_select_status").val();
+				
+		$('#vip_dataInfo').datagrid({
+			url:'../../servlet/UserInfoServlet',
+			queryParams:{op:"searchUserInfoByPage",uname:uname,status:status}
+		});
+	} 
+	
+	
+	
+	 $(function(){
+			var xmlDom=createXmlDom();
+			xmlDom.async=false;
+			xmlDom.load("city.xml");
+			
+			var pro=$("#update_vip_prov");
+			var city=$("#update_vip_city");
+			var district=$("#update_vip_area");
+			
+			var pros=xmlDom.getElementsByTagName("province");
+			
+			for(var i=0;i<pros.length;i++){
+				addOption(pros[i],pro);	
+			}
+			
+			pro.bind({
+				change:function(){
+					var code=pro.val();
+					$("#update_vip_city").empty();
+					$("#update_vip_area").empty();
+					var opInfo=$("<option value='100100'>--请选择城市--</option>");
+					$("#update_vip_city").prepend(opInfo);
+					var opInfo=$("<option value='100101'>--请选择地区--</option>");
+					$("#update_vip_area").prepend(opInfo);
+					
+					for(var i=0;i<pros.length;i++){
+						if(pros[i].nodeType==1 && pros[i].getAttribute("postcode")==code){
+							var cities=pros[i].childNodes;
+							for(var j=0;j<cities.length;j++){
+								if(cities[j].nodeType==1){
+									addOption(cities[j],city);	
+								}
+							}
+						}
+					}
+				}
+			});
+			
+			city.bind({
+				change:function(){
+					var selPro=pro.val();
+					var code=city.val();
+					$("#update_vip_area").empty();
+					var opInfo=$("<option value='100101'>--请选择地区--</option>");
+					$("#update_vip_area").prepend(opInfo);
+					
+					for(var i=0;i<pros.length;i++){
+						if(pros[i].nodeType==1 && pros[i].getAttribute("postcode")==selPro){
+							var cities=pros[i].childNodes;
+							for(var j=0;j<cities.length;j++){
+								if(cities[j].nodeType==1 && cities[j].getAttribute("postcode")==code){
+									var area=cities[j].childNodes;
+									for(var k=0;k<area.length;k++){
+										if(area[k].nodeType==1){
+											addOption(area[k],district);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+		});
+		
+		function addOption(node,obj){
+			var opInfo=$("<option value="+node.getAttribute("postcode")+">"+node.getAttribute("name")+"</option>");
+			opInfo.appendTo(obj);
+		}
+		
+		
+		function createXmlDom(){
+			var xmlDom=null;
+			if(window.ActiveXObject){
+				xmlDom=createIeXmlDom();	
+			}else if(document.implementation.createDocument){
+				xmlDom=document.implementation.createDocument("","",null);
+			}else{
+				alert("您的浏览器不支持xmlDom,请及时更新");	
+			}
+			return xmlDom;
+		}
+		
+		function createIeXmlDom(){
+			var arr=["MSXML2.DOMDocument.6.0","MSXML2.DOMDocument.5.0","MSXML2.DOMDocument.4.0","MSXML2.DOMDocument.3.0","MSXML2.DOMDocument","Microsoft.XMLDOM"];
+			for(var i=0;i<arr.length;i++){
+				try{
+					var ieXmlDom=new ActiveXObject(arr[i]);
+					return ieXmlDom;
+				}catch(ex){
+					alert("您的浏览器不支持MSXML组件，请及时更新浏览器");	
+				}
+			}
+		}
+			
+</script>
+

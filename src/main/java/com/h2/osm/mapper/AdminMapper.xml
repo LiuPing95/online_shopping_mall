@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.h2.osm.mapper.AdminMapper">
+	<insert id="insert" parameterType="com.h2.osm.entity.AdminInfo">
+		insert into 
+		adminInfo(id, rid, name, pwd, telephone, email, status, photo) 
+		values(
+			seq_adminInfo.NEXTVAL,
+			#{admin.rid},
+			#{admin.name},
+			#{admin.pwd},
+			#{admin.telephone},
+			#{admin.email},
+			0,
+			#{admin.photo}
+		)
+	</insert>
+	
+	<select id="selectByCondition" parameterType="com.h2.osm.entity.AdminInfo" resultType="com.h2.osm.entity.AdminInfo">
+		select * from adminInfo a
+		where a.name = #{admin.aname} and a.pwd = {admin.pwd} and a.rid = {admin.rid}
+	</select>
+</mapper>

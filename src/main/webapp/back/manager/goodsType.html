@@ -1,0 +1,155 @@
+<table id="goodsType_dataInfo"></table>
+
+
+<script>
+var datagrid;
+var editRow=undefined;  //当前编辑行
+var statusObj=[{sid:1,statusStr:'正常'},{sid:0,statusStr:'已禁用'}];
+var op;
+var flag;
+
+datagrid=$('#goodsType_dataInfo').datagrid({
+	url:'../../servlet/GoodsTypeInfoServlet',
+	queryParams: {op:"findGoodsTypeByPages"},
+	loadMsg:"数据加载中...",
+	fitColumns:true,
+	striped:true,  //设置为true将交替显示行背景
+	nowrap:true,  //设置为true，当数据长度超出列宽时将会自动截取
+	pagination:true,
+	fit:true,
+	rownumbers:true,
+	pageList:[5,10,40,50,100],
+	pageSize:5,
+	sortName:"tid",
+	remoteSort:false,
+	columns:[[
+		{field:'tids',title:'选择',width:100,align:'center',checkbox:true},
+		{field:'tid',title:'类型编号',width:100,align:'center'},
+		{field:'tname',title:'商品类型名称',width:100,align:'center',editor:{type:"text",options:{required:true}}},
+		{field:'des',title:'类型描述',width:100,align:'center',editor:{type:"text"}},
+		{field:'statusStr',title:'类型状态',width:100,align:'center',editor:{type:"combobox",options:{
+			required:true,valueField:'sid',textField:'statusStr',data:statusObj}},  //textField:显示给别人看的   
+																					//data:statusObj:可以是个json类型的对象
+			formatter:function(value,row,index){  //value：当前列的值   row:当前行的值
+				for(var i=0;i<statusObj.length;i++){
+					if(statusObj[i].sid==value){
+						return value;
+					}
+					//return statusObj[i].sname;
+				}
+			return value;
+			}
+		}
+	]],
+		toolbar: [{
+			iconCls: 'icon-add',
+			text:"添加",
+			
+			handler: function(){
+				op="addGoodsType";
+				flag="添加";
+				if(editRow!=undefined){  //说明当前有正在被编辑的行
+					datagrid.datagrid("rejectChanges");   //回滚自创建以来或自上次调用AcceptChanges  所有的数据变化
+					datagrid.datagrid('endEdit',editRow);  //结束正在被编辑的行
+					editRow=undefined
+				}else{
+					datagrid.datagrid("insertRow",{index:0,row:{}});   //在最前面添加一行
+					datagrid.datagrid('beginEdit',0);  //开始编辑第一行
+					editRow=0;  //记录当前正在被编辑的行
+				}				
+			}
+		},'-',{
+			iconCls: 'icon-edit',
+			text:"修改",  //用户选择修改时
+			handler: function(){
+				op="updateGoodsType";
+				flag="修改";
+				var row=datagrid.datagrid("getChecked")[0];
+				if(row==undefined){  //没有选择要修改 的数据
+					$.messager.show({title:'温馨提示',msg:'请选择你要'+flag+'的数据',timeout:2000,showType:'slide'});
+				}else{  
+				  //判断有么有正在被编辑行,若有，则先关闭正在被编辑的行
+				  if(editRow!=undefined){
+					  datagrid.datagrid("rejectChanges");
+					  datagrid.datagrid('endEdit',editRow);  //结束正在被编辑的行
+					  editRow=undefined;
+				  }else{
+					  //开启要修改的那一行的编辑
+					  var index=datagrid.datagrid("getRowIndex",row);   //获取要修改 的行的索引
+					  //开启编辑
+					  datagrid.datagrid("updateRow",{index:index,row:row});  //开启更新
+					  datagrid.datagrid("beginEdit",index); 
+					  editRow=index;     //记录正在被编辑的行
+				  }
+				}
+			}
+		},'-',{
+			iconCls: 'icon-remove', 
+			text:"删除" ,   //用户选择删除时
+			handler: function(){
+				//获取所有选择的行
+				var rows=datagrid.datagrid("getChecked"); 
+				if(rows.length<=0){
+					$.messager.show({title:'温馨提示',msg:'请选择你要删除的数据',timeout:2000,showType:'slide'});
+				}else{
+					$.messager.confirm('删除确认','您确定要删除选中的数据吗',function(rt){
+						if(rt){  //若确认删除，则获取所有要删除的数据的id
+							var tids="";
+							for(var i=0;i<rows.length-1;i++){
+								tids+=rows[i].tid+",";
+							}
+							tids+=rows[i].tid;
+							//发送到后台，从数据库中删除此数据
+							$.post("../../servlet/GoodsTypeInfoServlet",{op:"deleteGoodsType",tid:tids},function(data){
+								data=parseInt( $.trim(data));
+								if(data>0){  
+									$.messager.show({title:'成功提示',msg:'商品类型信息删除成功...',timeout:2000,showType:'slide'});
+									datagrid.datagrid("reload"); //重新加载数据
+								}else{
+									$.messager.alert('失败提示','商品类型信息删除失败...','error');
+								}
+							});
+						}
+					});					
+				}
+			}
+		},'-',{
+			iconCls: 'icon-save',
+			text:"保存",  //用户选择保存时
+			
+			handler: function(){
+				datagrid.datagrid('endEdit',editRow);  
+				var rows=datagrid.datagrid("getChanges")[0];  //获取正在被编辑的行
+				if(rows==undefined){  //说明没有修改任何信息
+					datagrid.datagrid("rejectChanges");  
+					datagrid.datagrid("unselectAll");  //取消选中所有页面的行
+					editRow=undefined;
+				}else{
+					//往role对象里添加一个op属性
+					rows["op"]=op;
+					$.post("../../servlet/GoodsTypeInfoServlet",rows,function(data){
+						data=parseInt(  $.trim(data));
+						if(data>0){  //说明是成功的
+							$.messager.show({title:'成功提示',msg:'商品类型信息'+flag+'成功',timeout:2000,showType:'slide'});
+							rows=null;
+							datagrid.datagrid("reload");  //重新加载数据
+							datagrid.datagrid("rejectChanges");
+							datagrid.datagrid("unselectAll"); 
+						}else{
+							$.messager.alert('失败提示','商品类型信息'+flag+'失败','error');
+						}
+					});
+				}
+			}
+		},'-',{
+			iconCls: 'icon-redo',
+			text:"撤销" ,  //用户选择撤销时
+			handler: function(){
+				 datagrid.datagrid("rejectChanges");
+				 datagrid.datagrid('endEdit',editRow);  //结束正在被编辑的行
+			     editRow=undefined
+			} 
+		}] 
+	});
+</script>
+

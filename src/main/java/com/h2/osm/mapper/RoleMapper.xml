@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.h2.osm.mapper.RoleMapper">
+	<insert id="insert" parameterType="com.h2.osm.entity.Role">
+		insert into role(id, name, des, status) 
+		values(
+			seq_role.NEXTVAL, 
+			#{role.name}, 
+			#{role.des}, 
+			#{role.status}
+		)
+	</insert>
+	
+	<delete id="delete" parameterType="list">
+		delete from role where 1=1 and id in
+		<foreach collection="roles" item="role" separator="," open="(" close=")">
+			#{role.id}
+		</foreach>
+	</delete>
+	
+	<update id="update" parameterType="com.h2.osm.entity.Role">
+		update role
+		<set>
+			<if test="role.des != null">des = #{role.des}</if>
+			<if test="role.status != null"> status = #{role.status}</if>
+		</set>
+		where id =  #{role.id}
+	</update>
+	
+	<select id="getRolesByCondition" resultType="com.h2.osm.entity.Role">
+		select * from role
+	</select>
+	<resultMap id="roleList" type="list">
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="des" property="des"/>
+		<result column="status" property="status"/>
+	</resultMap>
+</mapper> 

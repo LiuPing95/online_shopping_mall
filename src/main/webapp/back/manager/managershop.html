@@ -1,0 +1,252 @@
+<table id="shop_dataInfo"></table>
+<style>
+	.add_shop_info>ul>li{
+		list-style-type:none;
+		margin-top:20px;
+		
+	}
+	.add_shop_info li>span{
+		display:inline-block;
+		width:120px;
+		text-align:right;
+		margin-right:10px;
+		
+	}
+	.add_shop_info li>input , .add_shop_info li>select{
+		width:200px;
+		border:1px solid #6198CD;		
+	}
+
+</style>
+
+
+<!-添加操作框 -->
+ <div class="add_shop_info">
+		<ul>
+			<li>
+				<span >商家编号:</span>
+				<select name="manage_shopInfo_aid" id="manage_shopInfo_aid">
+				
+				</select>
+				<span>店铺名称:</span>
+				<input type="text" name="manage_shopInfo_aname" id="manage_shopInfo_aname" placeholder="请输入店铺名称..."/>
+				<span>店铺类型:</span>
+				<select name="manage_shopInfo_type" id="manage_shopInfo_type">
+				
+				</select>
+			</li>
+			<li>
+				<span>省&nbsp;&nbsp;&nbsp;&nbsp;份：</span>
+				<select name="manage_shopInfo_prov" id="manage_shopInfo_prov">
+					<option value="-1">--请选择省份--</option>
+				</select>
+				<span>城&nbsp;&nbsp;&nbsp;&nbsp;市：</span>
+				<select name="manage_shopInfo_city" id="manage_shopInfo_city">
+					<option value="-1">--请选择城市--</option>
+				</select>
+				<span>地&nbsp;&nbsp;&nbsp;&nbsp;区：</span>
+				<select name="manage_shopInfo_area" id="manage_shopInfo_area">
+					<option value="-1">--请选择地区--</option>
+				</select>
+			</li>
+			<li>
+				<span>详细地址：</span>
+				<input type="text" name="manage_shopInfo_addr" id="manage_shopInfo_addr" placeholder="请输入您的详细地址..."/>
+				<span>联系方式：</span>
+				<input type="text" name="manage_shopInfo_tel" id="manage_shopInfo_tel" onBlur="checkTel(this)" placeholder="请输入您的联系方式..."/>
+				
+				<span>日期：</span>
+				<input type="text" name="manage_shopInfo_date" id="manage_shopInfo_date"  class="easyui-datebox"/>
+				<input type="text" name="cue" id="cue" style="margin-top:10px;margin-left:475px;border:"/>
+			</li>
+			<li>	
+				<span>店铺信息：</span>
+				<a  href="javascript:add_ShopInfo()" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				<br /><br />
+				<div style="margin-left:70px;margin-top:0px">
+					<script id="editor" type="text/plain" style="width:900px;height:300px;"></script>
+				</div>
+			</li>
+		</ul>
+</div>
+
+
+	
+<script type="text/javascript">
+	//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+	var ue = UE.getEditor('editor');
+	
+	/* function add_ShopInfo(){
+		 UE.getEditor('editor').execCommand('insertHtml', '<p>张三李四</p><p>王五</p><p>赵六</p><p>天气<br/></p>');
+		console.info(ue.getContent());
+		
+		$("#manage_shopInfo_date").datebox("setValue",'2016-08-16');
+		console.info($("#manage_shopInfo_date").datebox("getValue"));
+	}
+	 */	
+	 
+	 function checkTel(obj){
+			var reg=/^(\d{3}-\d{8}|\d{4}-\d{7})|[1][358]\d{9}$/;
+			//var reg=/^((0[0-9]{2,3}-)?([2-9][0-9]{6,7})+(-[0-9]{1,4})?)$|(^(13[0-9]|15[0|3|6|7|8|9]|18[8|9])d{8}$)/;
+			if(reg.test(obj.value)){
+				$("#cue").val("联系方式格式正确");
+				$("#manage_shopInfo_tel").css("border-color","green");
+			}else{
+				$("#cue").val("联系方式格式不正确");
+				$("#manage_shopInfo_tel").css("border-color","red");
+			}
+		}
+	 
+	function add_ShopInfo(){
+		var aid=$("#manage_shopInfo_aid").val();
+		var spname=$("#manage_shopInfo_aname").val();
+		var tid=$("#manage_shopInfo_type").val();
+		var prov=$("#manage_shopInfo_prov").find("option:selected").text();
+		var city=$("#manage_shopInfo_city").find("option:selected").text();
+		var area=$("#manage_shopInfo_area").find("option:selected").text();
+		var addr=$("#manage_shopInfo_addr").val();
+		var tel=$("#manage_shopInfo_tel").val();
+		var date=$("#manage_shopInfo_date").val();
+		
+		$.post("../../servlet/ShopServlet",{op:"addShopInfo",aid:aid,spname:spname,tid:tid,prov:prov,city:city,area:area,addr:addr,tel:tel,date:date},
+			function(data){
+				data=parseInt( $.trim(data));
+				if(data>0){
+					$.messager.show({title:'成功提示',msg:'店铺信息添加成功。。。',timeout:2000,showType:'slide'});
+					
+					$("#manage_shopInfo_aid").val("");
+					$("#manage_shopInfo_aname").val("");
+					$("#manage_shopInfo_type").val("");
+					$("#manage_shopInfo_prov").val("");
+					$("#manage_shopInfo_city").val("");
+					$("#manage_shopInfo_area").val("");
+					$("#manage_shopInfo_addr").val("");
+					$("#manage_shopInfo_tel").val("");
+					$("#manage_shopInfo_date").val(""); 
+					
+					$("#add_shop_info").dialog("close");  //关闭弹窗
+					$('#shop_dataInfo').datagrid("reload");  //刷新数据
+					location.href='index.html';
+				}else{
+					$.messager.alert('失败提示','店铺信息添加失败..','error');
+				}			
+		});
+		
+	 }
+	 
+		$(function(){
+			$.post("../../servlet/AdminInfoServlet",{op:"findAllAdmin"},function(data){
+				var obj=$("#manage_shopInfo_aid");
+				$.each(data,function(index,item){
+					obj.append( $("<option value='"+item.aid+"'>"+item.aname+"</option>") );
+				});
+			},"json"); 	
+		});
+	 
+		
+	 $(function(){
+			$.post("../../servlet/GoodsTypeInfoServlet",{op:"findAllGoodsType"},function(data){
+				var obj=$("#manage_shopInfo_type");
+				$.each(data,function(index,item){
+					obj.append( $("<option value='"+item.tid+"'>"+item.tname+"</option>") );
+				});
+			},"json"); 	
+		});
+	  
+	$(function(){
+		var xmlDom=createXmlDom();
+		xmlDom.async=false;
+		xmlDom.load("city.xml");
+		
+		var pro=$("#manage_shopInfo_prov");
+		var city=$("#manage_shopInfo_city");
+		var district=$("#manage_shopInfo_area");
+		
+		var pros=xmlDom.getElementsByTagName("province");
+		
+		for(var i=0;i<pros.length;i++){
+			addOption(pros[i],pro);	
+		}
+		
+		$("#manage_shopInfo_prov").bind({
+			change:function(){
+				var code=pro.val();
+				$("#manage_shopInfo_city").empty();
+				$("#manage_shopInfo_area").empty();
+				var opInfo=$("<option value='100100'>--请选择城市--</option>");
+				$("#manage_shopInfo_city").prepend(opInfo);
+				var opInfo=$("<option value='100101'>--请选择地区--</option>");
+				$("#manage_shopInfo_area").prepend(opInfo);
+				
+				for(var i=0;i<pros.length;i++){
+					if(pros[i].nodeType==1 && pros[i].getAttribute("postcode")==code){
+						var cities=pros[i].childNodes;
+						for(var j=0;j<cities.length;j++){
+							if(cities[j].nodeType==1){
+								addOption(cities[j],city);	
+							}
+						}
+					}
+				}
+			}
+		});
+		
+		$("#manage_shopInfo_city").bind({
+			change:function(){
+				var selPro=pro.val();
+				var code=city.val();
+				$("#manage_shopInfo_area").empty();
+				var opInfo=$("<option value='100101'>--请选择地区--</option>");
+				$("#manage_shopInfo_area").prepend(opInfo);
+				
+				for(var i=0;i<pros.length;i++){
+					if(pros[i].nodeType==1 && pros[i].getAttribute("postcode")==selPro){
+						var cities=pros[i].childNodes;
+						for(var j=0;j<cities.length;j++){
+							if(cities[j].nodeType==1 && cities[j].getAttribute("postcode")==code){
+								var area=cities[j].childNodes;
+								for(var k=0;k<area.length;k++){
+									if(area[k].nodeType==1){
+										addOption(area[k],district);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+	});
+	
+	function addOption(node,obj){
+		var opInfo=$("<option value="+node.getAttribute("postcode")+">"+node.getAttribute("name")+"</option>");
+		opInfo.appendTo(obj);
+	}
+	
+	
+	function createXmlDom(){
+		var xmlDom=null;
+		if(window.ActiveXObject){
+			xmlDom=createIeXmlDom();	
+		}else if(document.implementation.createDocument){
+			xmlDom=document.implementation.createDocument("","",null);
+		}else{
+			alert("您的浏览器不支持xmlDom,请及时更新");	
+		}
+		return xmlDom;
+	}
+	
+	function createIeXmlDom(){
+		var arr=["MSXML2.DOMDocument.6.0","MSXML2.DOMDocument.5.0","MSXML2.DOMDocument.4.0","MSXML2.DOMDocument.3.0","MSXML2.DOMDocument","Microsoft.XMLDOM"];
+		for(var i=0;i<arr.length;i++){
+			try{
+				var ieXmlDom=new ActiveXObject(arr[i]);
+				return ieXmlDom;
+			}catch(ex){
+				alert("您的浏览器不支持MSXML组件，请及时更新浏览器");	
+			}
+		}
+	}
+</script>
+
+

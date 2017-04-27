@@ -1,0 +1,207 @@
+<table id="order_dataInfo"></table>
+
+<!-- 工具栏 -->
+<div id="order_search" style="height:28px">
+	
+	<a  href="javascript:delOrdersInfos()" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" 
+	style="float:left">删除</a>
+	<div class="datagrid-btn-seperator"></div> 
+	<a  href="showPic.html" class="easyui-linkbutton" data-options="iconCls:'icon-edit2',plain:true" 
+	style="float:left">查看报表</a>
+	<div class="datagrid-btn-seperator"></div>
+	
+	<label>请输入会员名称:</label><input type="text" name="uname" id="order_select_uname"/>
+	<label>请选择状态:</label><select name="status" id="order_select_status">
+		<option value="-1">--请选择--</option>
+		<option value="0">确认未支付</option>
+		<option value="1">已支付</option>
+		<option value="2">已取消</option>
+	</select>
+	&nbsp;&nbsp;<a  href="javascript:seachOrder()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查找</a>
+</div>
+
+
+<style>
+	#order_search label{
+		margin-left:10px;
+	}
+</style>
+<script type="text/javascript" src="../../js/md4.js"></script>
+
+<script type="text/javascript">
+
+	var datagrid;	
+
+	$(function(){
+		$.post("../../servlet/RolesServlet",{op:"findAllRoles"},function(data){
+			var obj=$("#order_select_rid");
+			$.each(data,function(index,item){
+				obj.append( $("<option value='"+item.rid+"'>"+item.rname+"</option>") );
+			});
+		},"json"); 	
+	});
+
+	datagrid=$('#order_dataInfo').datagrid({
+		url:'../../servlet/OrderInfoServlet',
+		queryParams:{op:"findOrderInfoByPage"},
+		loadMsg:"数据加载中...",
+		fitColumns:true,
+		striped:true,
+		nowrap:true,
+		pagination:true,
+		fit:true,
+		rownumbers:true,
+		pageList:[10,20,30,40,50,100],
+		
+		sortName:"oid",  //排序字段
+		remoteSort:false,
+		
+		columns:[[
+				{field:'oids',title:'选择',width:70,align:'center',checkbox:true},
+				{field:'oid',title:'订单编号',width:100,align:'center',sortable:true},
+				{field:'odate',title:'订单日期',width:100,align:'center'},
+				{field:'usid',title:'会员编号',width:100,align:'center'},
+				{field:'uname',title:'昵称',width:100,align:'center'},
+				{field:'gaid',title:'活动编号',width:100,align:'center'},
+				{field:'nums',title:'商品份数',width:80,align:'center'},
+				{field:'totalprice',title:'订单总额',width:80,align:'center'},
+				{field:'statusStr',title:'订单状态',width:100,align:'center'},
+				{field:'_operate',title:'操作',width:150,align:'center',formatter:function(val,row,index){
+					return "<a href='javascript:delOrders("+row.oid+")' class='icon-remove1 icon-padding'>删除</a>"+
+					"&nbsp;&nbsp;&nbsp;<a href='javascript:updateOrdersInfo("+JSON.stringify(row)+")' class='icon-edit2 icon-padding'>修改</a>";
+				}}
+		]],
+		toolbar: "#order_search"
+	});
+	
+	
+	
+	
+	function delOrders(oid){
+		$.post("../../servlet/OrderInfoServlet", {
+			op : "deleteOrdersInfo",
+			oid : oid
+		}, function(data) {
+			data = parseInt($.trim(data));
+			if (data > 0) {
+				$.messager.show({
+					title : '成功提示',
+					msg : '订单信息删除成功...',
+					timeout : 1000,
+					showType : 'slide'
+				});
+				datagrid.datagrid("reload");
+			} else {
+				$.messager.alert('失败提示', '订单信息删除失败...', 'error');
+			}
+		});
+	}
+	
+	//删除多行
+	function delOrdersInfos() {
+		var rows = datagrid.datagrid("getChecked");
+		if (rows.length <= 0) {
+			$.messager.show({
+				title : '温馨提示',
+				msg : '请选择您要删除的数据',
+				timeout : 1000,
+				showType : 'slide'
+			});
+		} else {
+			$.messager.confirm('确认删除', '您确定要删除选中的数据吗？', function(rt) {
+				if (rt) {
+					var oids = "";
+					for (var i = 0; i < rows.length - 1; i++) {
+						oids += rows[i].oid + ",";
+					}
+					oids += rows[i].oid;
+
+					$.post("../../servlet/GoodsInfoServlet", {
+						op : "deleteGoodsInfo",
+						oid : oids
+					}, function(data) {
+						data = parseInt($.trim(data));
+						if (data > 0) {
+							$.messager.show({
+								title : '成功提示',
+								msg : '订单信息删除成功...',
+								timeout : 1000,
+								showType : 'slide'
+							});
+							datagrid.datagrid("reload");
+						} else {
+							$.messager.alert('失败提示', '订单信息删除失败...', 'error');
+						}
+					});
+				}
+			});
+		}
+	}
+	
+	function seachOrder(){
+		var rid=$("#order_select_rid").val();
+		var uname=$("#order_select_uname").val();
+		var status=$("#order_select_status").val();
+		
+		$('#order_dataInfo').datagrid({
+			url:'../../servlet/OrderInfoServlet',
+			queryParams:{op:"seachOrder",rid:rid,uname:uname,status:status}
+		});
+	}
+	
+	function show(){
+		findData();
+		setTimeout(function(){
+			showpic();
+		},2000);
+	}
+</script>
+<!-- <script>
+	var months=[];  //设置月份
+	var dataNum=[];    //设置订单量
+	function findData(){
+		var myDate=new Date();
+		var year=myDate.getFullYear();  //获取当前年份（2位）
+		
+		$.post("../../servlet/OrderInfoServlet",{op:"findData",year:year},function(data){
+			$.each(data,function(data){
+				months[i]=item.month+"月";
+				var dataNum=item.nums;
+			});
+		},"json");
+	}
+</script> -->
+<!-- <script src="../echarts/echarts.js"></script>
+<script type="text/javascript">
+	function showpic(){
+		require.config({
+			paths: {echarts: '../echarts'}
+		});
+		
+		require(
+			['echarts','echarts/chart/bar','echarts/chart/line','echarts/chart/map'],
+			function(ec){
+				var myChart=ec.init(document.getElementById('main'));
+				myChart.setOption({
+					tooltip:{trigger:'axis'},
+					legend:{
+						data:['订单量'],
+					},
+					toolbox:{
+						show:true,
+						feature:{
+							mark:{show:true}, 
+							dataView:{show:true,readOnly:false},  //数据预览
+							magicType:{show:true,type:['line','bar']},  //支持柱形图和折线图的切换    
+							saveAsImage:{show:true} //是否保存图片 
+						}
+					},
+					calculable:true,
+					xAxis:[{type:'category',data:months}],   //type   X轴均为category，Y轴均为value  
+					yAxis:[{type:'value',splitArea:{show:true}}],
+					series:[{name:'订单量',type:'bar',dataNum}]
+				});
+			}
+		)
+	}
+</script> -->
