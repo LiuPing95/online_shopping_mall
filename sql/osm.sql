@@ -6,7 +6,7 @@ create table role(
        status number(2)
 );
 create sequence seq_role start with 10001;
-
+select * from role
 --管理员信息表
 create table adminInfo(
        id number(10)  primary key,
@@ -65,25 +65,21 @@ create sequence seq_store start with 10001;
 --商品表
 create table commodity(
        id number(10) primary key,
+       tid number(10) constraints FK_type_id references type(id),  --类型id
+       sid number(10) constraints FK_store_id references store(id), --所属店铺编号
        name varchar2(200),
        des varchar2(200),    --描述
        price number(10,2),   --价格
+       inventory number(4),  --库存量
        picture varchar2(2000),    --照片
        status number(2)           --状态(上架，下架)
 );
 create sequence seq_commodity start with 10001;
 
---商品类型表
-create table commodity_type(
-       id number(10) primary key,
-       tid number(10),  --类型id
-       cid number(10)   --商品id
-);
-create sequence seq_commodity_type start with 10001;
-
 --活动表
 create table activity(
        id number(10) primary key,
+       tid number(10) constraints FK_commodity_id references commodity(id),  --商品类型编号
        discount number(10,2), --折扣价
        title varchar2(200),
        startdate date,
@@ -93,31 +89,16 @@ create table activity(
 );
 create sequence seq_activity start with 10001;
 
---商品活动联系表
-create table commodity_activity(
-       id number(10) primary key,
-       cid number(10),  --商品id
-       aid number(10)   --活动id
-);
-create sequence seq_commodity_activity start with 10001;
-
 --订单表
 create table orders(
        id varchar2(200) primary key,  --订单编号
+       sid number(10) constraints FK_store_id references store(id),  --店铺编号
        quatity number(10), --商品份数
        total number(10,8), --订单总额
        status number(2),  --订单状态
        odate date  --订单日期
 );
 create sequence seq_order start with 10001;
-
---商店订单联系表
-create table store_order(
-       id number(10) primary key,
-       oid varchar2(200),
-       sid number(10)
-);
-create sequence seq_store_order start with 10001;
 
 --消息表
 create table message(
