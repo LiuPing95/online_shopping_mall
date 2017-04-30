@@ -79,7 +79,7 @@ create sequence seq_commodity start with 10001;
 --活动表
 create table activity(
        id number(10) primary key,
-       tid number(10) constraints FK_commodity_id references commodity(id),  --商品类型编号
+       cid number(10) constraints FK_commodity_id references commodity(id),  --商品编号
        discount number(10,2), --折扣价
        title varchar2(200),
        startdate date,
