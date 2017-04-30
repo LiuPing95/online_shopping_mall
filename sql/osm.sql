@@ -2,7 +2,7 @@
 create table role(
        id number(10) primary key,
        name varchar2(100) not null unique,
-       mark varchar2(200),
+       des varchar2(200),
        status number(2)
 );
 create sequence seq_role start with 10001;
