@@ -9,8 +9,8 @@ var op;
 var flag;
 
 datagrid=$('#goodsType_dataInfo').datagrid({
-	url:'../../servlet/GoodsTypeInfoServlet',
-	queryParams: {op:"findGoodsTypeByPages"},
+	url:'goodsType/list',
+	queryParams: {},
 	loadMsg:"数据加载中...",
 	fitColumns:true,
 	striped:true,  //设置为true将交替显示行背景
@@ -20,14 +20,14 @@ datagrid=$('#goodsType_dataInfo').datagrid({
 	rownumbers:true,
 	pageList:[5,10,40,50,100],
 	pageSize:5,
-	sortName:"tid",
+	sortName:"id",
 	remoteSort:false,
 	columns:[[
-		{field:'tids',title:'选择',width:100,align:'center',checkbox:true},
-		{field:'tid',title:'类型编号',width:100,align:'center'},
-		{field:'tname',title:'商品类型名称',width:100,align:'center',editor:{type:"text",options:{required:true}}},
+		{field:'ids',title:'选择',width:100,align:'center',checkbox:true},
+		{field:'id',title:'类型编号',width:100,align:'center'},
+		{field:'name',title:'商品类型名称',width:100,align:'center',editor:{type:"text",options:{required:true}}},
 		{field:'des',title:'类型描述',width:100,align:'center',editor:{type:"text"}},
-		{field:'statusStr',title:'类型状态',width:100,align:'center',editor:{type:"combobox",options:{
+		{field:'status',title:'类型状态',width:100,align:'center',editor:{type:"combobox",options:{
 			required:true,valueField:'sid',textField:'statusStr',data:statusObj}},  //textField:显示给别人看的   
 																					//data:statusObj:可以是个json类型的对象
 			formatter:function(value,row,index){  //value：当前列的值   row:当前行的值
@@ -96,13 +96,12 @@ datagrid=$('#goodsType_dataInfo').datagrid({
 						if(rt){  //若确认删除，则获取所有要删除的数据的id
 							var tids="";
 							for(var i=0;i<rows.length-1;i++){
-								tids+=rows[i].tid+",";
+								tids+=rows[i].id+",";
 							}
-							tids+=rows[i].tid;
+							tids+=rows[i].id;
 							//发送到后台，从数据库中删除此数据
-							$.post("../../servlet/GoodsTypeInfoServlet",{op:"deleteGoodsType",tid:tids},function(data){
-								data=parseInt( $.trim(data));
-								if(data>0){  
+							$.post("goodsType/del",{tid:tids},function(data){
+								if(data == true){  
 									$.messager.show({title:'成功提示',msg:'商品类型信息删除成功...',timeout:2000,showType:'slide'});
 									datagrid.datagrid("reload"); //重新加载数据
 								}else{
@@ -126,10 +125,8 @@ datagrid=$('#goodsType_dataInfo').datagrid({
 					editRow=undefined;
 				}else{
 					//往role对象里添加一个op属性
-					rows["op"]=op;
-					$.post("../../servlet/GoodsTypeInfoServlet",rows,function(data){
-						data=parseInt(  $.trim(data));
-						if(data>0){  //说明是成功的
+					$.post("goodsType/add",rows,function(data){
+						if(data == true){  //说明是成功的
 							$.messager.show({title:'成功提示',msg:'商品类型信息'+flag+'成功',timeout:2000,showType:'slide'});
 							rows=null;
 							datagrid.datagrid("reload");  //重新加载数据

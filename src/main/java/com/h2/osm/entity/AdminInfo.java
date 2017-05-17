@@ -14,6 +14,12 @@ public class AdminInfo implements Serializable {
 	private String name; 
 	private String pwd;
 	private String email;
+	@Override
+	public String toString() {
+		return "AdminInfo [id=" + id + ", rid=" + rid + ", name=" + name + ", pwd=" + pwd + ", email=" + email + ", telephone=" + telephone
+				+ ", photo=" + photo + ", status=" + status + "]";
+	}
+
 	private String telephone;
 	private String photo;
 	private Integer status; //状态：0待审核   1审核未通过  2已审核,可以正常登录  3冻结

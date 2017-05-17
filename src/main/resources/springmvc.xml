@@ -27,6 +27,11 @@
 		<property name="suffix" value=".html"/>
 	</bean>
 	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
 	<!-- 静态页面不处理 -->
 	<mvc:default-servlet-handler/>
 	

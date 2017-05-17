@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.h2.osm.mapper.GoodsMapper">
+	
+	<insert id="insertGoods">
+		insert into commodity(
+			id, tid, sid, name, des, price, inventory, picture, status
+		)
+		values(
+			seq_commodity.nextval,
+			#{obj.tid},
+			#{obj.sid},
+			#{obj.name},
+			#{obj.des},
+			#{obj.price},
+			#{obj.inventory},
+			#{obj.picture},
+			#{obj.status}
+		)
+	</insert>
+	
+</mapper>

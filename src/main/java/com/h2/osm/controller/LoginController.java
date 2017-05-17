@@ -14,68 +14,80 @@ import com.h2.osm.util.AttributeData;
 @Controller
 @RequestMapping("/")
 public class LoginController {
-	
+
 	@Autowired
 	private AdminService adminService;
-	
+
 	@RequestMapping("register")
 	@ResponseBody
-	public int adminRegister(HttpSession session, String rid, String aname, String pwd, String email, String tel){
-		if(rid == null || ("").equals(rid.trim())){
-			return -1;
+	public boolean adminRegister(HttpSession session, String rid, String aname, String pwd, String email, String tel) {
+		if (rid == null || ("").equals(rid.trim())) {
+			return false;
 		}
-		if(aname == null || ("").equals(aname.trim())){
-			return -1;
+		if (aname == null || ("").equals(aname.trim())) {
+			return false;
 		}
-		if(pwd == null || ("").equals(pwd.trim())){
-			return -1;
+		if (pwd == null || ("").equals(pwd.trim())) {
+			return false;
 		}
-		if(email == null || ("").equals(email.trim())){
-			return -1;
+		if (email == null || ("").equals(email.trim())) {
+			return false;
 		}
-		if(tel == null || ("").equals(tel.trim())){
-			return -1;
+		if (tel == null || ("").equals(tel.trim())) {
+			return false;
 		}
-		AdminInfo admin = new AdminInfo();
-		admin.setRid(10006+"");
-		admin.setName(aname);
-		admin.setPwd(pwd);
-		admin.setEmail(email);
-		admin.setTelephone(tel);
-		admin.setStatus(admin.getStatus());
-		admin.setPhoto(admin.getPhoto());
-		int result = adminService.insert(admin);
-		session.setAttribute(AttributeData.CURRENTADMINLOGIN, admin);
-		return result;
-	}
-	
-	@RequestMapping("adminLogin")
-	public String adminLogin(HttpSession session, String rid, String aname, String pwd, String code) {
-		if(rid == null || ("").equals(rid.trim())){
-			return null;
-		}
-		if(aname == null || ("").equals(aname.trim())){
-			return null;
-		}
-		if(pwd == null || ("").equals(pwd.trim())){
-			return null;
-		}
-		/*if(code == null || ("").equals(code.trim())){
-			return null;
-		}*/
 		AdminInfo admin = new AdminInfo();
 		admin.setRid(rid);
 		admin.setName(aname);
 		admin.setPwd(pwd);
-		AdminInfo result = adminService.selectByCondition(admin);
-		if(result != null){
-			session.setAttribute(AttributeData.CURRENTADMINLOGIN, admin);
-			//TODO:跳转到后台管理界面
-			//return "back/manager/index";
-		}else{
-			return "back/login";
+		admin.setEmail(email);
+		admin.setTelephone(tel);
+		admin.setPhoto(admin.getPhoto());
+		adminService.insert(admin);
+		return true;
+	}
+
+	@RequestMapping("adminToLogin")
+	@ResponseBody
+	public boolean adminToLogin(HttpSession session, String rid, String name, String pwd, String code) {
+		AdminInfo admin = new AdminInfo();
+		admin.setRid(rid);
+		admin.setName(name);
+		admin.setPwd(pwd);
+		AdminInfo curUser = adminService.selectByCondition(admin);
+		if (curUser == null) {
+			return false;
 		}
-		return null;
+		session.setAttribute(AttributeData.CUR_USER, curUser);
+		return true;
+	}
+
+	@RequestMapping("backIndex")
+	public String backIndex() {
+		return "/back/manager/index";
+	}
+	
+	@RequestMapping("vipToLogin")
+	@ResponseBody
+	public boolean vipToLogin(HttpSession session, String rid, String aname, String pwd, String code) {
+
+		return true;
+	}
+
+	@RequestMapping("vipLogin")
+	public String vipLogin() {
+		return "login";
+	}
+
+	@RequestMapping("adminLogin")
+	public String adminLogin() {
+		return "/back/login";
+	}
+	
+	@RequestMapping("getCurUser")
+	@ResponseBody
+	public AdminInfo getCurUser(HttpSession session) {
+		return (AdminInfo) session.getAttribute(AttributeData.CUR_USER);
 	}
 	
 }

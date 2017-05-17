@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.h2.osm.mapper.GoodsTypeMapper">
+	
+	<insert id="insertType">
+		insert into type(
+			id, name, des, status
+		)
+		values(
+			seq_type.nextval,
+			#{obj.name},
+			#{obj.des},
+			#{obj.status}
+		)
+	</insert>
+	
+	<select id="getTypes" resultType="GoodsType">
+		select * from type
+	</select>
+	
+	<delete id="del">
+		delete from type where id in
+		<choose>
+			<when test="idList == null">
+				(0)
+			</when>
+			<otherwise>
+				<foreach collection="idList" item="id" separator="," open="(" close=")">
+					#{id}
+				</foreach>
+			</otherwise>
+		</choose>
+	</delete>
+	
+</mapper>

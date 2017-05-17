@@ -3,13 +3,13 @@ package com.h2.osm.serviceImpl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import com.h2.osm.entity.Role;
 import com.h2.osm.mapper.RoleMapper;
 import com.h2.osm.service.RoleService;
 
-@Controller
+@Service
 public class RoleServiceImpl implements RoleService{
 	
 	@Autowired

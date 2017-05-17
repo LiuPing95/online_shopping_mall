@@ -1,13 +1,12 @@
 
 $(function(){
-	
-	$.post("../../servlet/AdminInfoServlet",{op:"getLoginInfo"},function(data){
+	$.post("getCurUser",{},function(data){
 		if(data=="" || data==null){
+			alert("失败");
 			//location.href="../login.html";
 		}else{
-			
-			$("#index_loginUser").text(data.aname);
-			$("#index_loginPhoto").attr("src","../../"+data.photos);
+			$("#index_loginUser").text(data.name);
+			$("#index_loginPhoto").attr("src", data.photo);
 		}
 	},"json");
 	
@@ -15,7 +14,7 @@ $(function(){
 	    title:'皇家工学院',   
 	    closable:true, 
 	    fit:true,
-	    href:"yc.html"
+	    href:"back/manager/yc.html"
 	});
 	
 	//当点击菜单的时候，自动创建一个选项卡
@@ -33,7 +32,7 @@ $(function(){
 						  title:'角色管理',
 						  closable:true,
 						  fit:true,
-						  href:"roles.html"
+						  href:"back/manager/roles.html"
 					   });
 				   }
 			   
@@ -45,7 +44,7 @@ $(function(){
 					  title:'管理员信息',
 					  closable:true,
 					  fit:true,
-					  href:"admin.html"
+					  href:"back/manager/admin.html"
 				   });
 			   }
 		   }else if(node.id=="shopping1"){
@@ -57,7 +56,7 @@ $(function(){
 					  title:'审核店铺信息',
 					  closable:true,
 					  fit:true,
-					  href:"checkshop.html"
+					  href:"back/manager/checkshop.html"
 				   });
 			   }
 		   }else if(node.id=="shopping3"){
@@ -69,7 +68,7 @@ $(function(){
 					  title:'管理店铺信息',
 					  closable:true,
 					  fit:true,
-					  href:"managershop.html"
+					  href:"back/manager/managershop.html"
 				   });
 			   }
 		   }else if(node.id=="shopping2"){
@@ -80,7 +79,7 @@ $(function(){
 					  title:'查看店铺信息',
 					  closable:true,
 					  fit:true,
-					  href:"shop2.html"
+					  href:"back/manager/shop2.html"
 				   });
 			   }
 		   }else if(node.id=="index_user"){
@@ -92,7 +91,7 @@ $(function(){
 					  title:'会员信息',
 					  closable:true,
 					  fit:true,
-					  href:"vip.html"
+					  href:"back/manager/vip.html"
 				   });
 			   }
 		   }else if(node.id=="index_goods"){
@@ -104,7 +103,7 @@ $(function(){
 					  title:'商品类型信息',
 					  closable:true,
 					  fit:true,
-					  href:"goodsType.html"
+					  href:"back/manager/goodsType.html"
 				   });
 			   }
 		   }else if(node.id=="goods2"){
@@ -116,7 +115,7 @@ $(function(){
 					  title:'查看商品信息',
 					  closable:true,
 					  fit:true,
-					  href:"showgoods.html"
+					  href:"back/manager/showgoods.html"
 				   });
 			   }
 		   }else if(node.id=="goods1"){
@@ -128,7 +127,7 @@ $(function(){
 					  title:'添加商品信息',
 					  closable:true,
 					  fit:true,
-					  href:"addgoods.html"
+					  href:"back/manager/addgoods.html"
 				   });
 			   }
 		   }else if(node.id=="order2"){
@@ -140,7 +139,7 @@ $(function(){
 					  title:'订单管理',
 					  closable:true,
 					  fit:true,
-					  href:"orders.html"
+					  href:"back/manager/orders.html"
 				   });
 			   }
 		   }		

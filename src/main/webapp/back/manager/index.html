@@ -3,17 +3,17 @@
 <head>
 	<meta charset="UTF-8">
 	<title>窝窝团后台管理</title>
-	<link rel="stylesheet" type="text/css" href="../../easyUi/css/easyui.css">
-	<link rel="stylesheet" type="text/css" href="../../easyUi/css/icon.css">
-	<link rel="stylesheet" type="text/css" href="../../easyUi/css/demo.css">
-	<script type="text/javascript" src="../../easyUi/js/jquery.min.js"></script>
-	<script type="text/javascript" src="../../easyUi/js/jquery.easyui.min.js"></script>
-	<script type="text/javascript" src="../../easyUi/js/easyui-lang-zh_CN.js"></script>
-	<script type="text/javascript" src="../../easyUi/js/index.js"></script>
-	<script type="text/javascript" src="../../js/ajaxfileupload.js"></script>
-	<script type="text/javascript" charset="utf-8" src="../../ueditor1_4_3-utf8-jsp/ueditor.config.js"></script>
-	<script type="text/javascript" charset="utf-8" src="../../ueditor1_4_3-utf8-jsp/ueditor.all.min.js"></script>
-	<script type="text/javascript" charset="utf-8" src="../../ueditor1_4_3-utf8-jsp/lang/zh-cn/zh-cn.js"></script>
+	<link rel="stylesheet" type="text/css" href="easyUi/css/easyui.css">
+	<link rel="stylesheet" type="text/css" href="easyUi/css/icon.css">
+	<link rel="stylesheet" type="text/css" href="easyUi/css/demo.css">
+	<script type="text/javascript" src="easyUi/js/jquery.min.js"></script>
+	<script type="text/javascript" src="easyUi/js/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="easyUi/js/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="easyUi/js/index.js"></script>
+	<script type="text/javascript" src="js/ajaxfileupload.js"></script>
+	<!-- <script type="text/javascript" charset="utf-8" src="ueditor1_4_3-utf8-jsp/ueditor.config.js"></script>
+	<script type="text/javascript" charset="utf-8" src="ueditor1_4_3-utf8-jsp/ueditor.all.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="ueditor1_4_3-utf8-jsp/lang/zh-cn/zh-cn.js"></script> -->
 	
 	<style>
 		.copyright{
@@ -27,7 +27,7 @@
 			margin:0px;
 		}
 		.copyright span{
-			background: url("../../images/yclogo.png") no-repeat left center;
+			background: url("images/yclogo.png") no-repeat left center;
 			padding-left: 30px;
 			font-size: 16px;
 			font-weight: bold;
@@ -82,9 +82,8 @@
 </head>
 <body class="easyui-layout">
 	<div data-options="region:'north',border:false" style="height:100px;background:#B3DFDA;padding:5px;margin:0px;overflow:hidden;">
-		<img src="../../images/logo.gif" height="90px"/>
 		<div class="navy_header">
-			<img id="index_loginPhoto" src="../../images/zanwu.jpg" width="90px" height="90px"/>
+			<img id="index_loginPhoto" src="images/zanwu.jpg" width="90px" height="90px"/>
 			<div>
 				<p>当前用户：<span id="index_loginUser"></span></p>
 				<p>
@@ -205,14 +204,14 @@
     </div>
 </div>
 <script>
-	$(function(){
+	/* $(function(){
 		$.post("../../servlet/RolesServlet",{op:"findAllRoles"},function(data){
 			var obj=$("#update_index_role");
 			$.each(data,function(index,item){
 				obj.append( $("<option value='"+item.rid+"'>"+item.rname+"</option>") );
 			});
 		},"json"); 	
-	});
+	}); */
 </script>
 <script>
 	function updatePwd(){

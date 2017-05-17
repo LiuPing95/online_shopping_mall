@@ -19,8 +19,8 @@ $(function(){
 				str+="<li><a id='"+item.id+"' href=\"javascript:login('"+item.id+"','loginrole')\">"+item.name+"</a></li>";
 				str1+="<li><a id='"+item.id+"' href=\"javascript:login('"+item.id+"','role')\">"+item.name+"</a></li>";
 			});
-			$("#loginRoles").html("").append( $(str) );
-			$("#registerRoles").html("").append(   $(str1));
+			$("#loginRoles").html("").append($(str));
+			$("#registerRoles").html("").append($(str1));
 		},"json");
 		
 		/*checkUname(obj);
@@ -63,7 +63,7 @@ $(function(){
 	function login(id,role) {
     	var flag = $("#"+id).text();
     	$("#"+role).val(flag);
-    	$("#roleId").val(id);   //将ID存到一个隐藏域
+    	$("#roleId").val(id);  //将ID存到一个隐藏域
     	$("#register_roleId").val(id);
 	}
 	
@@ -95,15 +95,9 @@ $(function(){
 			return false;
 		}
 		
-		$.post("/online_shopping_mall/adminLogin",{rid:role,aname:name,pwd:pwd,code:code},function(data){
-			debugger;
-			data=parseInt(  $.trim(data));
-			if(data==1){
-				$("#vcode").css("border-color","red");
-			}else if(data==2){
-				alert("用户名或密码错误");
-			}else if(data==3){
-				location.href="manager/index.html";
+		$.post("/online_shopping_mall/adminToLogin",{rid:role,name:name,pwd:pwd,code:code},function(data){
+			if(data == true){
+				location.href="backIndex";
 			}else{
 				alert("用户名或密码错误");
 			}
@@ -119,7 +113,6 @@ $(function(){
 		var rpwds=$.trim( $("#rpwds").val());
 		var email=$.trim( $("#email").val());
 		var tel=$.trim( $("#tel").val() );
-				
 		/*if(role==null){
 			return false;
 		}*/
@@ -147,10 +140,8 @@ $(function(){
 			return false;
 		}		*/
 		$.post("/online_shopping_mall/register",{rid:rid,aname:aname,pwd:pwd,email:email,tel:tel},function(data){
-			data=parseInt( $.trim(data));
-			if(data>0){
+			if(data == true){
 //				$.messager.show({title:'成功提示',msg:'欢迎，成为皇家工学院的一员。。。',timeout:2000,showType:'slide'});
-				debugger;
 				window.location.href='adminLogin';
 			}else{
 				alert("信息填写不符合规范或未填写完整");

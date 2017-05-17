@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.h2.osm.mapper.StoreMapper">
+	
+	<insert id="insertGoods">
+		insert into store(
+			id, name, telephone, province, city, area, location, status, info
+		)
+		values(
+			seq_store.nextval,
+			#{obj.name},
+			#{obj.telephone},
+			#{obj.province},
+			#{obj.city},
+			#{obj.area},
+			#{obj.location},
+			#{obj.status},
+			#{obj.info}
+		)
+	</insert>
+	
+</mapper>
