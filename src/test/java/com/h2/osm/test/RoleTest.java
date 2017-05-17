@@ -57,7 +57,7 @@ public class RoleTest {
 	public void testGet(){
 		Role role = new Role();
 		role.setId(4);
-		List<Role> roles = roleService.getRolesByCondition(role);
-		System.out.println(roles);
+//		List<Role> roles = roleService.getRolesByCondition(role);
+//		System.out.println(roles);
 	}
 }
