@@ -14,4 +14,6 @@ public interface GoodsTypeMapper {
 
 	void del(@Param("idList") List<Integer> idList);
 
+	void update(@Param("obj") GoodsType obj);
+
 }

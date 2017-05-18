@@ -27,4 +27,8 @@ public class GoodsTypeServiceImpl implements GoodsTypeService {
 		goodsTypeMapper.del(idList);
 	}
 
+	public void update(GoodsType obj) {
+		goodsTypeMapper.update(obj);
+	}
+
 }

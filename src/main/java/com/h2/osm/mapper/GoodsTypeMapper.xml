@@ -16,6 +16,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		)
 	</insert>
 	
+	<update id="update">
+		update type set
+		name = #{obj.name},
+		des = #{obj.des},
+		status = #{obj.status}
+		where id = #{obj.id}
+	</update>
+	
 	<select id="getTypes" resultType="GoodsType">
 		select * from type
 	</select>

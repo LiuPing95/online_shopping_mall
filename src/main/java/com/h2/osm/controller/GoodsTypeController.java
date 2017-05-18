@@ -36,6 +36,13 @@ public class GoodsTypeController {
 		return true;
 	}
 	
+	@RequestMapping("update")
+	@ResponseBody
+	public boolean update(GoodsType obj) {
+		typeService.update(obj);
+		return true;
+	}
+	
 	@RequestMapping("add")
 	@ResponseBody
 	public boolean add(GoodsType obj) {

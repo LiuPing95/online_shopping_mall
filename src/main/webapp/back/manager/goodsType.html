@@ -125,17 +125,31 @@ datagrid=$('#goodsType_dataInfo').datagrid({
 					editRow=undefined;
 				}else{
 					//往role对象里添加一个op属性
-					$.post("goodsType/add",rows,function(data){
-						if(data == true){  //说明是成功的
-							$.messager.show({title:'成功提示',msg:'商品类型信息'+flag+'成功',timeout:2000,showType:'slide'});
-							rows=null;
-							datagrid.datagrid("reload");  //重新加载数据
-							datagrid.datagrid("rejectChanges");
-							datagrid.datagrid("unselectAll"); 
-						}else{
-							$.messager.alert('失败提示','商品类型信息'+flag+'失败','error');
-						}
-					});
+					if(flag == "修改"){
+						$.post("goodsType/update",rows,function(data){
+							if(data == true){  //说明是成功的
+								$.messager.show({title:'成功提示',msg:'商品类型信息'+flag+'成功',timeout:2000,showType:'slide'});
+								rows=null;
+								datagrid.datagrid("reload");  //重新加载数据
+								datagrid.datagrid("rejectChanges");
+								datagrid.datagrid("unselectAll"); 
+							}else{
+								$.messager.alert('失败提示','商品类型信息'+flag+'失败','error');
+							}
+						});
+					}else if(flag == "添加"){
+						$.post("goodsType/add",rows,function(data){
+							if(data == true){  //说明是成功的
+								$.messager.show({title:'成功提示',msg:'商品类型信息'+flag+'成功',timeout:2000,showType:'slide'});
+								rows=null;
+								datagrid.datagrid("reload");  //重新加载数据
+								datagrid.datagrid("rejectChanges");
+								datagrid.datagrid("unselectAll"); 
+							}else{
+								$.messager.alert('失败提示','商品类型信息'+flag+'失败','error');
+							}
+						});
+					}
 				}
 			}
 		},'-',{

@@ -11,5 +11,7 @@ public interface GoodsTypeService {
 	List<GoodsType> getTypes();
 
 	void del(List<Integer> idList);
+
+	void update(GoodsType obj);
 	
 }
