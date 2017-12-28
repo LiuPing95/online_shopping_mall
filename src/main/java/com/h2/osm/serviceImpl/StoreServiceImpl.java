@@ -1,5 +1,7 @@
 package com.h2.osm.serviceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,10 @@ public class StoreServiceImpl implements StoreService {
 	
 	public void insertStore(Store obj) {
 		storeMapper.insertStore(obj);
+	}
+
+	public List<Store> getStores() {
+		return storeMapper.getStores();
 	}
 
 }

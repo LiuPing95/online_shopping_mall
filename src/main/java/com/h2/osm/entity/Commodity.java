@@ -3,12 +3,12 @@ package com.h2.osm.entity;
 public class Commodity {
 
 	private Integer id;
-	private Integer tid;
-	private Integer sid;
+	private Integer tid;//typeId
+	private Integer sid;//storeId
 	private String name;
 	private String des;
 	private Double price;
-	private Integer inventory;
+	private Integer inventory;//库存量
 	private String picture;
 	private Integer status;
 	public Integer getId() {
@@ -64,6 +64,11 @@ public class Commodity {
 	}
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+	@Override
+	public String toString() {
+		return "Commodity [id=" + id + ", tid=" + tid + ", sid=" + sid + ", name=" + name + ", des=" + des + ", price=" + price + ", inventory="
+				+ inventory + ", picture=" + picture + ", status=" + status + "]";
 	}
 	
 }

@@ -117,14 +117,14 @@
 
 <script type="text/javascript">
 	$(function(){
-		$.post("../../servlet/GoodsTypeInfoServlet",{op:"findAllGoodsType"},function(data){
+		$.post("goodsType/list",{},function(data){
 			var obj=$("#update_checkShop_tid");
 			$.each(data,function(index,item){
-				obj.append( $("<option value='"+item.tid+"'>"+item.tname+"</option>") );
+				obj.append( $("<option value='"+item.id+"'>"+item.name+"</option>") );
 			});
 		},"json"); 	
 	});
-
+	/*
 	var datagrid;
 	var statusObj=[{sid:1,statusStr:'正常'},{sid:0,statusStr:'已禁用'}];
 	
@@ -144,11 +144,11 @@
 				obj.append( $("<option value='"+item.tid+"'>"+item.tname+"</option>") );
 			});
 		},"json"); 	
-	});
+	}); */
 	
 	datagrid=$('#shop2_dataInfo').datagrid({
-		url:'../../servlet/ShopServlet',
-		queryParams:{op:"findShopsByPages"},
+		url:'store/getStore',
+		queryParams:{},
 		loadMsg:"数据加载中...",
 		fitColumns:true,
 		striped:true,
@@ -157,17 +157,15 @@
 		fit:true,
 		rownumbers:true,
 		pageList:[10,20,30,40,50,100],
-		
-		sortName:"spid",  //排序字段
+		sortName:"id",  //排序字段
 		remoteSort:false,
 		
 		columns:[[
-				{field:'spids',title:'选择',width:70,align:'center',checkbox:true},
-				{field:'spid',title:'店铺id',width:70,align:'center',sortable:true},
-				{field:'sname',title:'店铺姓名',width:70,align:'center'},
+				{field:'ids',title:'选择',width:70,align:'center',checkbox:true},
+				{field:'id',title:'店铺id',width:70,align:'center',sortable:true},
+				{field:'name',title:'店铺姓名',width:70,align:'center'},
 				{field:'aid',title:'商家id',width:70,align:'center'},
 				{field:'aname',title:'商家姓名',width:70,align:'center'},
-				{field:'tid',title:'类型id',width:70,align:'center'},
 				{field:'tname',title:'类型名称',width:70,align:'center'},
 				{field:'prov',title:'省份',width:100,align:'center'},
 				{field:'city',title:'状态描述',width:100,align:'center'},
